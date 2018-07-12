@@ -1,17 +1,12 @@
 package artemiev.ocrmc;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.text.Editable;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -30,10 +25,12 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 
 import java.util.ArrayList;
 
-import artemiev.ocrmcproto.cMatrix;
-import artemiev.ocrmcproto.cOperator;
+import artemiev.ocrmcproto.BaseMatrix;
+import artemiev.ocrmcproto.MatrixOperator;
+import artemiev.ocrmcproto.RealMatrix;
 
 import static android.text.InputType.TYPE_CLASS_DATETIME;
+import static artemiev.ocrmcproto.BaseMatrix.newMatrix;
 
 public class aCalc extends AppCompatActivity
         implements View.OnClickListener, AdapterView.OnItemSelectedListener {
@@ -59,39 +56,39 @@ public class aCalc extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_a_calc);
 
-        dMatrixBuffer= (DrawerLayout) findViewById(R.id.dMatrixBuffer);
-        llDrawerLayout= (LinearLayout) findViewById(R.id.llDrawerLayout) ;
+        dMatrixBuffer = findViewById(R.id.dMatrixBuffer);
+        llDrawerLayout = findViewById(R.id.llDrawerLayout);
 
-        bAddToBuffer = (Button) findViewById(R.id.bAddToBuffer);
+        bAddToBuffer = findViewById(R.id.bAddToBuffer);
         bAddToBuffer.setOnClickListener(this);
 
-        bClearBuffer = (Button) findViewById(R.id.bClearBuffer);
+        bClearBuffer = findViewById(R.id.bClearBuffer);
         bClearBuffer.setOnClickListener(this);
 
-        MatrixBuffer= new ArrayList<cMatrix>();
+        MatrixBuffer = new ArrayList<RealMatrix>();
         MatrixIndices= new ArrayList<Integer>();
 
-        bInputA = (ToggleButton) findViewById(R.id.bInputA);
+        bInputA = findViewById(R.id.bInputA);
         bInputA.setOnClickListener(this);
 
-        bInputB = (ToggleButton) findViewById(R.id.bInputB);
+        bInputB = findViewById(R.id.bInputB);
         bInputB.setOnClickListener(this);
 
-        bResult = (ToggleButton) findViewById(R.id.bResult);
+        bResult = findViewById(R.id.bResult);
         bResult.setOnClickListener(this);
 
-        bToggleAction = (ToggleButton) findViewById(R.id.bToggleAction);
+        bToggleAction = findViewById(R.id.bToggleAction);
         bToggleAction.setOnClickListener(this);
 
-        tMatrixTitle = (TextView) findViewById(R.id.tMatrixTitle);
+        tMatrixTitle = findViewById(R.id.tMatrixTitle);
 
-        sRows = (Spinner) findViewById(R.id.sRows);
-        sCols = (Spinner) findViewById(R.id.sCols);
+        sRows = findViewById(R.id.sRows);
+        sCols = findViewById(R.id.sCols);
 
-        tMatrixDisplay= (EditText) findViewById(R.id.tMatrixDisplay);
+        tMatrixDisplay = findViewById(R.id.tMatrixDisplay);
         tMatrixDisplay.setRawInputType(TYPE_CLASS_DATETIME);
 
-        sOPChoice = (Spinner) findViewById(R.id.sOPChoice);
+        sOPChoice = findViewById(R.id.sOPChoice);
         sOPChoice.setOnItemSelectedListener(this);
 
         tMatrixDisplay.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -112,10 +109,10 @@ public class aCalc extends AppCompatActivity
         });
     }
 
-    private cMatrix A;
-    private cMatrix B;
-    private cMatrix C;
-    private ArrayList<cMatrix> MatrixBuffer;
+    private BaseMatrix A;
+    private BaseMatrix B;
+    private BaseMatrix C;
+    private ArrayList<BaseMatrix> MatrixBuffer;
     private ArrayList<Integer> MatrixIndices;
 
     @Override
@@ -188,16 +185,23 @@ public class aCalc extends AppCompatActivity
     private eMatrixState State= eMatrixState.sInputA;
 
     private void ChangeState(eMatrixState s){
-        switch (State) {
-            case sInputA: {
-                A= new cMatrix(tMatrixDisplay);
-            } break;
-            case sInputB: {
-                B= new cMatrix(tMatrixDisplay);
-            } break;
-            case sResult: {
+        try {
+            switch (State) {
+                case sInputA: {
+                    A = newMatrix(tMatrixDisplay);
+                }
+                break;
+                case sInputB: {
+                    B = newMatrix(tMatrixDisplay);
+                }
+                break;
+                case sResult: {
 
-            } break;
+                }
+                break;
+            }
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
         switch (s) {
@@ -209,7 +213,7 @@ public class aCalc extends AppCompatActivity
                 sCols.setEnabled(true);
 
                 if (A!=null)
-                    tMatrixDisplay.setText(A.AsString());
+                    tMatrixDisplay.setText(A.asString());
                 else
                     tMatrixDisplay.setText("");
             } break;
@@ -222,7 +226,7 @@ public class aCalc extends AppCompatActivity
                 sCols.setEnabled(true);
 
                 if (B!=null)
-                    tMatrixDisplay.setText(B.AsString());
+                    tMatrixDisplay.setText(B.asString());
                 else
                     tMatrixDisplay.setText("");
             } break;
@@ -235,7 +239,7 @@ public class aCalc extends AppCompatActivity
                 bResult.setChecked(true);
 
                 if (C!=null)
-                    tMatrixDisplay.setText(C.AsString());
+                    tMatrixDisplay.setText(C.asString());
                 else
                     tMatrixDisplay.setText("");
             } break;
@@ -257,7 +261,8 @@ public class aCalc extends AppCompatActivity
                     //Calculate();
                     ChangeState(eMatrixState.sResult);
                 }
-            }; break;
+            }
+            break;
             case R.id.bInputB: {
                 if (bInputB.isChecked()) {
                     ChangeState(eMatrixState.sInputB);
@@ -287,12 +292,18 @@ public class aCalc extends AppCompatActivity
             } break;
 
             case R.id.bAddToBuffer: {
+                try {
+                    MatrixBuffer.add(newMatrix(tMatrixDisplay));
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Button btn = new Button(this);
 
                 int ID= View.generateViewId();
                 btn.setId(ID);
 
-                MatrixBuffer.add(new cMatrix(tMatrixDisplay));
                 MatrixIndices.add(ID);
 
                 btn.setLongClickable(true);
@@ -337,7 +348,7 @@ public class aCalc extends AppCompatActivity
                 int Index= MatrixIndices.indexOf(ViewID);
                 if (Index!= -1) {
                     //MatrixIndices.remove(Index);
-                    tMatrixDisplay.setText(MatrixBuffer.get(Index).AsString());
+                    tMatrixDisplay.setText(MatrixBuffer.get(Index).asString());
                 }
             }
         }
@@ -346,51 +357,51 @@ public class aCalc extends AppCompatActivity
 
     private void Calculate(){
         if (A==null&&B!=null)
-            A= new cMatrix(B.Rows, B.Cols);
+            A = new RealMatrix(B.Rows, B.Cols);
         switch ((String) sOPChoice.getSelectedItem()) {
             case "Sum": {
                 if (A==null&&B!=null)
-                    A= new cMatrix(B.Rows, B.Cols);
+                    A = new RealMatrix(B.Rows, B.Cols);
 
                 if (B==null&&A!=null)
-                    B= new cMatrix(A.Rows, A.Cols);
+                    B = new RealMatrix(A.Rows, A.Cols);
 
                 if (A!=null&&B!=null) {
                     if (bToggleAction.isChecked())
-                        C = cOperator.SumMatrix(A, cOperator.InvertMatrix(B));
+                        C = MatrixOperator.sum(A, MatrixOperator.invert(B));
                     else
-                        C = cOperator.SumMatrix(A, B);
+                        C = MatrixOperator.sum(A, B);
                 }
                 else
-                    C= new cMatrix(0, 0);
+                    C = new RealMatrix(0, 0);
             } break;
 
             case "Mul": {
                 if (A==null&&B!=null)
-                    A= new cMatrix(B.Cols, B.Rows);
+                    A = new RealMatrix(B.Cols, B.Rows);
                 if (B==null&&A!=null)
-                    B= new cMatrix(A.Cols, A.Rows);
+                    B = new RealMatrix(A.Cols, A.Rows);
 
                 if (A!=null&&B!=null) {
-                    C= cOperator.MultMatrix(A,B);
+                    C = MatrixOperator.multiply(A, B);
                 }
                 else
-                    C= new cMatrix(0, 0);
+                    C = new RealMatrix(0, 0);
             } break;
 
-            //case "Pow": {for (int i=0; i<R= cOperator.MultMatrix(A,B);} break;
+            //case "Pow": {for (int i=0; i<R= MatrixOperator.multiply(A,B);} break;
             case "Transp": {
                 if (A==null)
-                    A= new cMatrix(1,1);
+                    A = new RealMatrix(1, 1);
                 if (A!=null)
-                    C= cOperator.TransponMatrix(A);
+                    C = MatrixOperator.transpose(A);
                 else
-                    C= new cMatrix(0, 0);
+                    C = new RealMatrix(0, 0);
             } break;
             case "Det": {
-                C= new cMatrix(1,1) ;
+                C = new RealMatrix(1, 1);
                 if (A!=null)
-                    C.M[0][0]= cOperator.DetMatrix(A);
+                    C.M[0][0] = MatrixOperator.det(A);
                 else
                     C.M[0][0]= 0;
             } break;

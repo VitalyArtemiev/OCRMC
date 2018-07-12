@@ -50,7 +50,7 @@ public class IntList {
         }
         else {
             IntMember Cur= Root;
-            while ((Cur.Next != null)||(Cur.Next.Value < v)) {               
+            while ((Cur.Next != null) && (Cur.Next.Value < v)) {
                     Cur= Cur.Next;               
             }           
             Cur.Next= new IntMember(v, Cur.Next); //null handled
@@ -70,7 +70,7 @@ public class IntList {
             IntMember Cur= Root;
             
             while (CurL != null) {
-                while ((Cur.Next != null)||(Cur.Next.Value < CurL.Value)) {               
+                while ((Cur.Next != null) && (Cur.Next.Value < CurL.Value)) {
                     Cur= Cur.Next;               
                 }           
                 Cur.Next= new IntMember(CurL.Value, Cur.Next); //null handled

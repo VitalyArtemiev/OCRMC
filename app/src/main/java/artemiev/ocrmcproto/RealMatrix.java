@@ -1,114 +1,75 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package artemiev.ocrmcproto;
 
 import android.widget.EditText;
 
-/**
- *
- * @author Виталий
- */
-public class cMatrix {
-    public /*cFrac*/double M[][];
-    public int Rows;
-    public int Cols;
-    public cMatrix(int r, int c){
-        Rows= r;
-        Cols= c;
-        M= new /*cFrac*/double[r][c];
+public class RealMatrix extends BaseMatrix {
+    public double M[][];
+
+    public RealMatrix(int r, int c) {
+        Rows = r;
+        Cols = c;
+        M = new double[r][c];
     }
-    public cMatrix(EditText t){
 
-        /*var
-        i, j, e: integer;
-        s: string;
-        a: double;*/
-
-        Rows= t.getLineCount();
+    public RealMatrix(EditText t) throws Exception {
+        Rows = t.getLineCount();
 
         String multiLines = t.getText().toString();
-        String[] Lines= multiLines.split("\n");
+        String[] Lines = multiLines.split("\n");
         String[][] Elements = new String[Lines.length][];
 
-        for (int i=0; i<Lines.length; i++){
-            Elements[i]=  Lines[i].split(" ");
-            if (Elements[i].length>Cols)
-                Cols= Elements[i].length;
+        for (int i = 0; i < Lines.length; i++) {
+            Elements[i] = Lines[i].split(" ");
+            if (Elements[i].length > Cols)
+                Cols = Elements[i].length;
         }
 
         //Toast.makeText(getApplicationContext(), String.valueOf(Rows) + ' ' + String.valueOf(Cols), Toast.LENGTH_SHORT).show();
 
-        M= new /*cFrac*/double[Rows][Cols];
+        M = new double[Rows][Cols];
 
-
-        for (int i= 0; i<Rows; i++)
-            for (int j= 0; j<Cols; j++) {
-                if (j<Elements[i].length)
+        for (int i = 0; i < Rows; i++)
+            for (int j = 0; j < Cols; j++) {
+                if (j < Elements[i].length)
                     try {
                         M[i][j] = Double.valueOf(Elements[i][j]);
-                    }
-                    catch (NumberFormatException e) {
-                        M[i][j] = 0;
+                    } catch (NumberFormatException e) {
+                        throw new Exception("Malformed element");
                     }
                 else
-                    M[i][j]= 0;
-                /*if e<> 0 then
-                raise Exception.Create('invalid value' + s);*/
-
-            };
-
-        
+                    throw new Exception("Lacking matrix element");
+            }
     }
-    
-    void SwapRow(int r1, int r2){
-       
-        //double a[]=;
-        //i: integer;
 
-  //writeln('swap start');
- // Print;
-
-  double a[]= M[r2];
-  M[r2]= M[r1];
-  M[r1]= a;
+    @Override
+    public void swapRow(int r1, int r2) {
+        double a[] = M[r2];
+        M[r2] = M[r1];
+        M[r1] = a;
   /*for i= 0 to Col - 1 do
   M[r1, i]*= -1; //change sign so to not change det  */
-
-  //writeln('swap stop');
-  //Print;
-
     }
-    
-    /*void PasteToGrid(G: tStringGrid){
-        
-    }*/
-            
-    public cMatrix Copy(){
-        cMatrix R= new cMatrix(Rows, Cols);
-        for (int i= 0; i< Rows; i++)
+
+    @Override
+    public RealMatrix copy() {
+        RealMatrix R = new RealMatrix(Rows, Cols);
+        for (int i = 0; i < Rows; i++)
             System.arraycopy(M[i], 0, R.M[i], 0, Cols);
         return R;
     }
-    
-    public String AsString(){
-        /*
-        i, j: integer;*/
-        String s= "";
-            //writeln(Row, ' ', Col);
-        for (int i=0; i<Rows; i++) {
-            for (int j=0; j<Cols; j++)
-                s+= Double.toString(M[i][j]) + ' ';
 
-            if (i!= Rows-1)
-                s+= '\n';
-        };
+    @Override
+    public String asString() {
+        String s = "";
+        for (int i = 0; i < Rows; i++) {
+            for (int j = 0; j < Cols; j++)
+                s += Double.toString(M[i][j]) + ' ';
+
+            if (i != Rows - 1)
+                s += '\n';
+        }
         return s;
     }
-
- //constructor Create(G: tStringGrid);
 }
 /*
 
@@ -145,11 +106,11 @@ type
     destructor Destroy; override;
   end;
 
-function MultMatrix(a, b: tMatrix): tMatrix;
-function SumMatrix(a, b: tMatrix): tMatrix;
-function DetMatrix(m: tMatrix): double;
-function InvertMatrix(a: tMatrix): tMatrix;
-function TransponMatrix(a: tMatrix): tMatrix;
+function multiply(a, b: tMatrix): tMatrix;
+function sum(a, b: tMatrix): tMatrix;
+function det(m: tMatrix): double;
+function invert(a: tMatrix): tMatrix;
+function transpose(a: tMatrix): tMatrix;
 
 implementation
 
