@@ -14,6 +14,15 @@ public class Fraction {
     public int Num;
     public int Den;
 
+
+    public Fraction() {
+        Num = 0;
+        Den = 1;
+
+        Numerator = factorize(Num);
+        Denominator = factorize(Den);
+    }
+
     public Fraction(int num, int den) throws NumberFormatException {
         Num = num;
         Den = den;
@@ -24,6 +33,7 @@ public class Fraction {
 
         Numerator = factorize(Num);
         Denominator = factorize(Den);
+        simplify();
     }
 
     private static IntList factorize(int number) {
@@ -41,20 +51,45 @@ public class Fraction {
         return factors;
     }
 
+    public Fraction copy() {
+        Fraction result = new Fraction();
+        result.Num = Num;
+        result.Den = Den;
+        result.Numerator = Numerator.copy();
+        result.Denominator = Denominator.copy();
+        return result;
+    }
+
+    public boolean equals(Fraction f) {
+        return Num == f.Num && Den == f.Den;
+    }
+
+    public boolean isZero() {
+        return Num == 0;
+    }
+
+    public void negate() {
+        Num *= -1;
+        Numerator.addsorted(-1);
+        simplify();
+    }
+
     public void add(Fraction f) {
         Num = Num * f.Den + Den * f.Num;
         Den *= f.Den;
         Numerator.clear();
         Numerator = factorize(Num);
         Denominator.addsorted(f.Denominator);
+        simplify();
     }
 
-    public void detract(Fraction f) {
+    public void subtract(Fraction f) {
         Num = Num * f.Den - Den * f.Num;
         Den *= f.Den;
         Numerator.clear();
         Numerator = factorize(Num);
         Denominator.addsorted(f.Denominator);
+        simplify();
     }
 
     public void multiply(Fraction f) {
@@ -62,6 +97,7 @@ public class Fraction {
         Denominator.addsorted(f.Denominator);
         Num *= f.Num;
         Den *= f.Den;
+        simplify();
     }
 
     public void divide(Fraction f) {
@@ -69,43 +105,43 @@ public class Fraction {
         Denominator.addsorted(f.Numerator);
         Num *= f.Den;
         Den *= f.Num;
+        simplify();
     }
 
     public void add(int a) {
         Num += a * Den;
         Numerator.clear();
         Numerator = factorize(Num);
+        simplify();
     }
 
-    public void detract(int a) {
+    public void subtract(int a) {
         Num -= a * Den;
         Numerator.clear();
         Numerator = factorize(Num);
+        simplify();
     }
 
     public void multiply(int a) {
         Numerator.addsorted(factorize(a));
+        simplify();
     }
 
-    public void divide(int a) {
-        Denominator.addsorted(factorize(a));
-    }
-
-    public void simplify() {
-        IntList.IntMember CN = Numerator.Root;
+    public void simplify() {//todo: seems fukken broken
+        IntList.IntMember CN = Numerator.Root;   //current
         IntList.IntMember CD = Denominator.Root;
-        IntList.IntMember PN = null;
+        IntList.IntMember PN = null;             //previous
         IntList.IntMember PD = null;
         while (CN != null) {
             while (CD != null && CD.Value < CN.Value) {
-                PN = CN;
-                CN = CN.Next;
+                PD = CD;
+                CD = CD.Next;
             }
 
             if (CD == null)
                 return;
 
-            if (CD.Value == CN.Value) {
+            if (CD.Value == CN.Value /*&& CD.Value != 1*/) {
                 if (PN != null && PD != null) {
                     Numerator.deletenext(PN);
                     Numerator.deletenext(PD);
@@ -118,6 +154,18 @@ public class Fraction {
             PN = CN;
             CN = CN.Next;
         }
+
+        Num = Numerator.product();
+        Den = Denominator.product();
+    }
+
+    public void divide(int a) {
+        Denominator.addsorted(factorize(a));
+        simplify();
+    }
+
+    public String toString() {
+        return Integer.toString(Num) + "/" + Integer.toString(Den);
     }
 
     public static Fraction valueOf(String s) {
@@ -136,11 +184,7 @@ public class Fraction {
         }
     }
 
-    public String toString() {
-        return Integer.toString(Num) + "/" + Integer.toString(Den);
-    }
-
-    public String toStringfactorized() {
+    public String toStringFactorized() {
         String Result = "1";
         IntList.IntMember Cur = Numerator.Root;
         while (Cur != null) {
@@ -148,7 +192,7 @@ public class Fraction {
             Cur = Cur.Next;
         }
 
-        Result += "/";
+        Result += "/1";
 
         Cur = Denominator.Root;
         while (Cur != null) {

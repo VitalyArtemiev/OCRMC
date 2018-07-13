@@ -13,6 +13,7 @@ public abstract class BaseMatrix {
             return new RealMatrix(t);
     }
 
+
     abstract public void swapRow(int r1, int r2);
 
     abstract public BaseMatrix copy();

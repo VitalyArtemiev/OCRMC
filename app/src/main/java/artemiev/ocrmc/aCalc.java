@@ -65,7 +65,7 @@ public class aCalc extends AppCompatActivity
         bClearBuffer = findViewById(R.id.bClearBuffer);
         bClearBuffer.setOnClickListener(this);
 
-        MatrixBuffer = new ArrayList<RealMatrix>();
+        MatrixBuffer = new ArrayList<BaseMatrix>();
         MatrixIndices= new ArrayList<Integer>();
 
         bInputA = findViewById(R.id.bInputA);
@@ -401,9 +401,9 @@ public class aCalc extends AppCompatActivity
             case "Det": {
                 C = new RealMatrix(1, 1);
                 if (A!=null)
-                    C.M[0][0] = MatrixOperator.det(A);
+                    ((RealMatrix) C).M[0][0] = MatrixOperator.det((RealMatrix) A);
                 else
-                    C.M[0][0]= 0;
+                    ((RealMatrix) C).M[0][0] = 0;
             } break;
             case "REF": {} break;
         }
