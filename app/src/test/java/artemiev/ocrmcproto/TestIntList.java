@@ -9,16 +9,25 @@ public class TestIntList {
     public void test() {
         IntList l = new IntList();
         l.add(1);
+        assertEquals("Product failed", 1, l.product());
+
         l.add(3);
+        assertEquals("Product failed", 3, l.product());
+
         assertEquals("Wrong number of elements", 2, l.MemberCount);
-        l.addsorted(2);
-        l.deletefirst();
-        assertEquals("Sort or df failed", 2, l.Root.Value);
-        l.addsorted(4);
-        l.addsorted(1);
-        assertEquals("Sort first element failed", 1, l.Root.Value);
+        assertEquals("1*3", l.toString());
+
+        l.addSorted(2);
+        assertEquals("Addsorted failed", "1*2*3", l.toString());
+        l.deleteFirst();
+        assertEquals("Deletefirst failed", "2*3", l.toString());
+        assertEquals("Product failed", 6, l.product());
+
+        l.addSorted(4);
+        l.addSorted(1);
+        assertEquals("Sort first element failed", "1*2*3*4", l.toString());
         IntList t = l.copy();
-        assertEquals("Copy failed", 1, t.Root.Value);
+        assertEquals("Copy failed", l.toString(), t.toString());
         assertEquals("Copy failed", l.MemberCount, t.MemberCount);
 
         l.clear();
@@ -30,10 +39,12 @@ public class TestIntList {
         t.add(2);
         t.add(2);
 
-        l.addsorted(t);
+        l.addSorted(t);
 
         assertEquals("Addsorted failed", 4, l.MemberCount);
-        assertEquals("Addsorted failed", 2, l.Root.Value);
+        assertEquals("Addsorted failed", "2*2*3*4", l.toString());
+        l.deleteFirst();
+        assertEquals("Product failed", 2 * 3 * 4, l.product());
 
         l.clear();
         t.clear();
@@ -50,9 +61,10 @@ public class TestIntList {
         t.add(9);
         t.add(9);
 
-        l.addsorted(t);
+        l.addSorted(t);
 
         assertEquals("Addsorted failed", 10, l.MemberCount);
-        assertEquals("Addsorted failed", 1, l.Root.Value);
+        assertEquals("Addsorted failed", "1*2*3*4*5*6*7*8*9*9", l.toString());
+        assertEquals("product failed", 2 * 3 * 4 * 5 * 6 * 7 * 8 * 9 * 9, l.product());
     }
 }

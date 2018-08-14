@@ -36,10 +36,13 @@ public class IntList {
         prod = 1;
         IntMember cur = Root;
 
-        for (int i = 0; i < MemberCount; i++) {
+        for (int i = 1; i < MemberCount; i++) {
             prod *= cur.Value;
             cur = cur.Next;
         }
+
+        prod *= cur.Value; //to avoid nullptrexc
+
         return prod;
     }
 
@@ -48,12 +51,12 @@ public class IntList {
         if (MemberCount == 0)
             return result;
 
-        IntMember cur = Root;
+        IntMember cur = Root.Next;
         result.Root = new IntMember(Root.Value);
         IntMember resPrev;
         IntMember resCur = result.Root;
 
-        for (int i = 0; i < MemberCount; i++) {
+        for (int i = 1; i < MemberCount; i++) {
             resPrev = resCur;
             resCur = new IntMember(cur.Value);
             resPrev.Next = resCur;
@@ -80,8 +83,8 @@ public class IntList {
         MemberCount++;
         prodReady = false;
     }
-    
-    void addsorted(int v) {
+
+    void addSorted(int v) {
         if (Root == null) {
             Root= new IntMember(v);
         }
@@ -102,8 +105,8 @@ public class IntList {
         MemberCount++;
         prodReady = false;
     }
-    
-    void addsorted(IntList L) {
+
+    void addSorted(IntList L) {
         if (L.MemberCount == 0)
             return;
         
@@ -114,7 +117,7 @@ public class IntList {
             IntMember CurL= L.Root;
             IntMember Cur= Root;
 
-            while ((CurL.Next != null) && (Root.Value >= CurL.Value)) {
+            while ((CurL != null) && (Root.Value >= CurL.Value)) {
                 IntMember t = CurL;
                 CurL = CurL.Next;
                 t.Next = Root;
@@ -133,8 +136,8 @@ public class IntList {
         MemberCount+= L.MemberCount;
         prodReady = false;
     }
-    
-    void deletefirst(){
+
+    void deleteFirst() {
         if (Root == null)
             return;
         prod /= Root.Value;         //doesnt change prodredy status
@@ -142,8 +145,8 @@ public class IntList {
         Root= Root.Next;
         MemberCount--;
     }
-    
-    void deletenext(IntMember p) {
+
+    void deleteNext(IntMember p) {
         if (p.Next == null)
             return;
         prod /= p.Next.Value;       //doesnt change prodredy status
@@ -162,5 +165,21 @@ public class IntList {
 
         prod = 0;
         prodReady = true;
+    }
+
+    public String toString() {
+        if (MemberCount == 0)
+            return "0";
+
+        IntList.IntMember Cur = Root;
+        String result = Integer.toString(Cur.Value);
+        Cur = Cur.Next;
+
+        while (Cur != null) {
+            result += "*" + Integer.toString(Cur.Value);
+            Cur = Cur.Next;
+        }
+
+        return result;
     }
 }

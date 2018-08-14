@@ -64,74 +64,94 @@ public class Fraction {
         return Num == f.Num && Den == f.Den;
     }
 
+    public boolean equals(int a) {
+        return Num == a && Den == 1;
+    }
+
     public boolean isZero() {
         return Num == 0;
     }
 
-    public void negate() {
+    public void unaryMinus() {
         Num *= -1;
-        Numerator.addsorted(-1);
+        Numerator.addSorted(-1);
         simplify();
     }
 
-    public void add(Fraction f) {
+    public void plus(Fraction f) {
         Num = Num * f.Den + Den * f.Num;
         Den *= f.Den;
         Numerator.clear();
         Numerator = factorize(Num);
-        Denominator.addsorted(f.Denominator);
+        Denominator.addSorted(f.Denominator);//TODO: this is totally wrong
         simplify();
     }
 
-    public void subtract(Fraction f) {
+    public void minus(Fraction f) {
         Num = Num * f.Den - Den * f.Num;
         Den *= f.Den;
         Numerator.clear();
         Numerator = factorize(Num);
-        Denominator.addsorted(f.Denominator);
+        Denominator.addSorted(f.Denominator);//TODO: this is totally wrong
         simplify();
     }
 
-    public void multiply(Fraction f) {
-        Numerator.addsorted(f.Numerator);
-        Denominator.addsorted(f.Denominator);
+    public void times(Fraction f) {
+        Numerator.addSorted(f.Numerator);
+        Denominator.addSorted(f.Denominator);
         Num *= f.Num;
         Den *= f.Den;
         simplify();
     }
 
-    public void divide(Fraction f) {
-        Numerator.addsorted(f.Denominator);
-        Denominator.addsorted(f.Numerator);
+    public void div(Fraction f) {
+        Numerator.addSorted(f.Denominator);
+        Denominator.addSorted(f.Numerator);
         Num *= f.Den;
         Den *= f.Num;
         simplify();
     }
 
-    public void add(int a) {
+    public void plus(int a) {
         Num += a * Den;
         Numerator.clear();
         Numerator = factorize(Num);
         simplify();
     }
 
-    public void subtract(int a) {
+    public void minus(int a) {
         Num -= a * Den;
         Numerator.clear();
         Numerator = factorize(Num);
         simplify();
     }
 
-    public void multiply(int a) {
-        Numerator.addsorted(factorize(a));
+    public void times(int a) {
+        Num *= a;
+        Numerator.addSorted(factorize(a));
         simplify();
     }
 
     public void simplify() {//todo: seems fukken broken
+        if (Num == 1 || Den == 1) {
+            return;
+        }
+
+        if (Num == Den) {
+            Num = 1;
+            Den = 1;
+            Numerator.clear();
+            Denominator.clear();
+            Numerator.add(1);
+            Denominator.add(1);
+            return;
+        }
+
         IntList.IntMember CN = Numerator.Root;   //current
         IntList.IntMember CD = Denominator.Root;
         IntList.IntMember PN = null;             //previous
         IntList.IntMember PD = null;
+
         while (CN != null) {
             while (CD != null && CD.Value < CN.Value) {
                 PD = CD;
@@ -141,26 +161,34 @@ public class Fraction {
             if (CD == null)
                 return;
 
-            if (CD.Value == CN.Value /*&& CD.Value != 1*/) {
-                if (PN != null && PD != null) {
-                    Numerator.deletenext(PN);
-                    Numerator.deletenext(PD);
+            if (CN.Value == CD.Value /*&& CD.Value != 1*/) {
+                if (PN != null) {
+                    Numerator.deleteNext(PN);
+                    CN = PN.Next;
                 } else {
-                    Numerator.deletefirst();
-                    Denominator.deletefirst();
+                    Numerator.deleteFirst();
+                    CN = Numerator.Root;
                 }
-            }
 
-            PN = CN;
-            CN = CN.Next;
+                if (PD != null) {
+                    Numerator.deleteNext(PD);
+                    CD = PD.Next;
+                } else {
+                    Denominator.deleteFirst();
+                    CD = Denominator.Root;
+                }
+            } else {
+                PN = CN;
+                CN = CN.Next;
+            }
         }
 
         Num = Numerator.product();
         Den = Denominator.product();
     }
 
-    public void divide(int a) {
-        Denominator.addsorted(factorize(a));
+    public void div(int a) {
+        Denominator.addSorted(factorize(a));
         simplify();
     }
 
@@ -185,21 +213,6 @@ public class Fraction {
     }
 
     public String toStringFactorized() {
-        String Result = "1";
-        IntList.IntMember Cur = Numerator.Root;
-        while (Cur != null) {
-            Result += "*" + Integer.toString(Cur.Value);
-            Cur = Cur.Next;
-        }
-
-        Result += "/1";
-
-        Cur = Denominator.Root;
-        while (Cur != null) {
-            Result += "*" + Integer.toString(Cur.Value);
-            Cur = Cur.Next;
-        }
-
-        return Result;
+        return Numerator.toString() + "/" + Denominator.toString();
     }
 }

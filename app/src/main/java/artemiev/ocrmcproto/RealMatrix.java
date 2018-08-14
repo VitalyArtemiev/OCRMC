@@ -106,7 +106,7 @@ type
     destructor Destroy; override;
   end;
 
-function multiply(a, b: tMatrix): tMatrix;
+function times(a, b: tMatrix): tMatrix;
 function sum(a, b: tMatrix): tMatrix;
 function det(m: tMatrix): double;
 function invert(a: tMatrix): tMatrix;

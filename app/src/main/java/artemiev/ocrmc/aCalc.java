@@ -368,9 +368,9 @@ public class aCalc extends AppCompatActivity
 
                 if (A!=null&&B!=null) {
                     if (bToggleAction.isChecked())
-                        C = MatrixOperator.sum(A, MatrixOperator.invert(B));
+                        C = MatrixOperator.INSTANCE.sum(A, MatrixOperator.INSTANCE.invert(B));
                     else
-                        C = MatrixOperator.sum(A, B);
+                        C = MatrixOperator.INSTANCE.sum(A, B);
                 }
                 else
                     C = new RealMatrix(0, 0);
@@ -383,25 +383,25 @@ public class aCalc extends AppCompatActivity
                     B = new RealMatrix(A.Cols, A.Rows);
 
                 if (A!=null&&B!=null) {
-                    C = MatrixOperator.multiply(A, B);
+                    C = MatrixOperator.INSTANCE.multiply(A, B);
                 }
                 else
                     C = new RealMatrix(0, 0);
             } break;
 
-            //case "Pow": {for (int i=0; i<R= MatrixOperator.multiply(A,B);} break;
+            //case "Pow": {for (int i=0; i<R= MatrixOperator.times(A,B);} break;
             case "Transp": {
                 if (A==null)
                     A = new RealMatrix(1, 1);
                 if (A!=null)
-                    C = MatrixOperator.transpose(A);
+                    C = MatrixOperator.INSTANCE.transpose(A);
                 else
                     C = new RealMatrix(0, 0);
             } break;
             case "Det": {
                 C = new RealMatrix(1, 1);
                 if (A!=null)
-                    ((RealMatrix) C).M[0][0] = MatrixOperator.det((RealMatrix) A);
+                    ((RealMatrix) C).M[0][0] = MatrixOperator.INSTANCE.det((RealMatrix) A);
                 else
                     ((RealMatrix) C).M[0][0] = 0;
             } break;
