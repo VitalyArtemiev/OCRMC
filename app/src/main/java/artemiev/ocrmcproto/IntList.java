@@ -76,7 +76,6 @@ public class IntList {
             IntMember Cur= Root;
             while (Cur.Next != null) {
                 Cur= Cur.Next;
-                
             }
             Cur.Next= new IntMember(v);
         }
@@ -89,6 +88,9 @@ public class IntList {
             Root= new IntMember(v);
         }
         else {
+            MemberCount++;
+            prodReady = false;
+
             if (Root.Value >= v) {
                 IntMember t = new IntMember(v);
                 t.Next = Root;
@@ -102,11 +104,11 @@ public class IntList {
             }           
             Cur.Next= new IntMember(v, Cur.Next); //null handled
         }
-        MemberCount++;
-        prodReady = false;
     }
 
-    void addSorted(IntList L) {
+    void addSorted(IntList l) {
+        IntList L = l.copy();
+
         if (L.MemberCount == 0)
             return;
         
@@ -144,6 +146,8 @@ public class IntList {
 
         Root= Root.Next;
         MemberCount--;
+
+
     }
 
     void deleteNext(IntMember p) {
