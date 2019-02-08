@@ -32,7 +32,7 @@ public class FractionMatrix extends BaseMatrix {
             for (int j = 0; j < Cols; j++) {
                 if (j < Elements[i].length)
                     try {
-                        M[i][j] = Fraction.valueOf(Elements[i][j]);
+                        M[i][j] = Fraction.Companion.valueOf(Elements[i][j]);
                     } catch (NumberFormatException e) {
                         throw new Exception("Malformed element");
                     }

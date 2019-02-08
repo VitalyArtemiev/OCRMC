@@ -366,13 +366,12 @@ object MatrixOperator {
         var j: Int
         i = 0
         while (i < R.Rows) {
-            {
-                j = 0
-                while (j < R.Cols) {
-                    R.M[i][j] = -a.M[i][j]
-                    j++
-                }
+            j = 0
+            while (j < R.Cols) {
+                R.M[i][j] = -a.M[i][j]
+                j++
             }
+
             i++
         }
         return R
@@ -384,13 +383,12 @@ object MatrixOperator {
         var j: Int
         i = 0
         while (i < R.Rows) {
-            {
-                j = 0
-                while (j < R.Cols) {
-                    R.M[i][j].unaryMinus()
-                    j++
-                }
+            j = 0
+            while (j < R.Cols) {
+                R.M[i][j].unaryMinus()
+                j++
             }
+
             i++
         }
         return R
@@ -414,13 +412,13 @@ object MatrixOperator {
         val R = RealMatrix(a.Cols, a.Rows)
         i = 0
         while (i < R.Rows) {
-            {
-                j = 0
-                while (j < R.Cols) {
-                    R.M[i][j] = a.M[j][i]
-                    j++
-                }
+
+            j = 0
+            while (j < R.Cols) {
+                R.M[i][j] = a.M[j][i]
+                j++
             }
+
             i++
         }
         return R
@@ -432,13 +430,13 @@ object MatrixOperator {
         val R = FractionMatrix(a.Cols, a.Rows)
         i = 0
         while (i < R.Rows) {
-            {
-                j = 0
-                while (j < R.Cols) {
-                    R.M[i][j] = a.M[j][i]
-                    j++
-                }
+
+            j = 0
+            while (j < R.Cols) {
+                R.M[i][j] = a.M[j][i]
+                j++
             }
+
             i++
         }
         return R
